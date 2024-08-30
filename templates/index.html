@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кружочек с Счетчиком Нажатий</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        #counter {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        #circle {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="counter">0</div>
+    <div id="circle">Нажми</div>
+    <p id="test">Нет id</p>
+    <script>
+        let tg = window.Telegram.WebApp; //получаем объект webapp телеграма
+        try {
+            document.getElementById('test').textContent = tg.initDataUnsafe.user.id;
+            fetch('/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'value': tg.initDataUnsafe.user.id})
+            });
+          
+        } catch (err) {
+        
+        // значит сайт открылся не в телеграм
+        
+        }
+            
+            let counter = 0;
+        const counterElement = document.getElementById('counter');
+        const circleElement = document.getElementById('circle');
+
+        circleElement.addEventListener('click', () => {
+            counter++;
+            counterElement.textContent = counter;
+        });
+        
+      
+        console.log('Начало');
+        
+
+        fetch('/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'value': 222})
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+        });
+
+        console.log('Конец');
+
+       
+       
+
+       
+        
+ 
+
+        
+    </script>
+</body>
+</html>
