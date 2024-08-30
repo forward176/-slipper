@@ -14,22 +14,30 @@ def index():
         print('@@@@')
         try:
             data = request.json
-            test = 'нет данных'
-            if 'value' in data:
-            
+            click_count = 0
+            if 'refresh_page' in data:
+                print('обновление страницы!')
                 tg_id = data['value']
                 file_path = f'user_data/{tg_id}.txt'
                 if os.path.exists(file_path):
 
                     with open(file_path, 'r', encoding='UTF-8') as file:
-                        test = file.read()
-                        print(test)
+                        click_count = file.read()
+                        print(click_count)
                 else:
                     with open(file_path, 'w', encoding='UTF-8') as file:
                         file.write('0')
                         print('Файл создан')
                     
-                return jsonify({'message': 'Success!', 'value': test}), 200
+                return jsonify({'message': 'Success!', 'value': click_count}), 200
+            elif 'new_click_count' in data:
+                tg_id = data['value']
+                new_click_count = data['new_click_count']
+                file_path = f'user_data/{tg_id}.txt'
+                with open(file_path, 'w', encoding='UTF-8') as file:
+                    file.write(f'{new_click_count}')                   
+                return jsonify({'message': 'Success!'}), 200
+
             else:
                 raise KeyError('Value key not found')
         except (KeyError, json.JSONDecodeError) as e:

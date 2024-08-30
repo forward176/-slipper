@@ -40,49 +40,67 @@
 <body>
     <div id="counter">0</div>
     <div id="circle">Нажми</div>
-    <p id="test">Нет id</p>
+    <p id="test">Нет id</p> <!-- для теста -->
     <script>
+
+        let counter = 0;
+        const counterElement = document.getElementById('counter');
+        const circleElement = document.getElementById('circle');
+
         let tg = window.Telegram.WebApp; //получаем объект webapp телеграма
         try {
-            document.getElementById('test').textContent = tg.initDataUnsafe.user.id;
+            document.getElementById('test').textContent = tg.initDataUnsafe.user.id; //  для теста
             fetch('/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'value': tg.initDataUnsafe.user.id})
+                body: JSON.stringify({'value': tg.initDataUnsafe.user.id, 'refresh_page': true})
+            }).then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                counter = parseInt(data['value']);
+                counterElement.textContent = counter;
             });
           
         } catch (err) {
         
-        // значит сайт открылся не в телеграм
+            // значит сайт открылся не в телеграм
+            // НИЖЕ КОД ТЕСТОВЫЙ
+            console.log('Начало');       
+
+            fetch('/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'value': 222})
+            })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                console.log('данные от flask:');
+                console.log(data['value']);
+                console.log('конец данных')
+            });
+    
+            console.log('Конец');
+
         
         }
             
-            let counter = 0;
-        const counterElement = document.getElementById('counter');
-        const circleElement = document.getElementById('circle');
+        
 
         circleElement.addEventListener('click', () => {
             counter++;
             counterElement.textContent = counter;
+            fetch('/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'value': tg.initDataUnsafe.user.id, 'new_click_count': counter})
+            });
         });
         
       
-        console.log('Начало');
-        
-
-        fetch('/', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({'value': 222})
-        })
-        .then((response) => {
-            return response.json();
-        })
-        .then((data) => {
-            console.log(data);
-        });
-
-        console.log('Конец');
+       
 
        
        
