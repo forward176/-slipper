@@ -53,12 +53,12 @@
             fetch('/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'value': tg.initDataUnsafe.user.id, 'refresh_page': true})
+                body: JSON.stringify({'tg_id': tg.initDataUnsafe.user.id, 'refresh_page': true})
             }).then((response) => {
                 return response.json();
             })
             .then((data) => {
-                counter = parseInt(data['value']);
+                counter = parseInt(data['click_count']);
                 counterElement.textContent = counter;
             });
           
@@ -66,7 +66,7 @@
         
             // значит сайт открылся не в телеграм
             // НИЖЕ КОД ТЕСТОВЫЙ
-            console.log('Начало');       
+            /* console.log('Начало');       
 
             fetch('/', {
                 method: 'POST',
@@ -82,7 +82,7 @@
                 console.log('конец данных')
             });
     
-            console.log('Конец');
+            console.log('Конец'); */
 
         
         }
@@ -95,21 +95,11 @@
             fetch('/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'value': tg.initDataUnsafe.user.id, 'new_click_count': counter})
+                body: JSON.stringify({'tg_id': tg.initDataUnsafe.user.id, 'new_click_count': counter})
             });
         });
         
-      
-       
 
-       
-       
-
-       
-        
- 
-
-        
     </script>
 </body>
 </html>

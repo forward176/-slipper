@@ -1,46 +1,51 @@
 from flask import Flask, render_template, request, jsonify
 import json
 import os.path
+import sqlite3
+import DB
+
+
+# TODO
+# вывод энергии на страничке
+# пересчёт энергии после офлайна
+# живой персчёт энергии
+# сохранение текущей энергии и текущего онлайна
+# клики можно делать только если есть энергия, при клике энергия тратится
+
+
+connection = sqlite3.connect('my_database.db')
+cursor = connection.cursor()
 
 app = Flask(__name__)
  
- 
+def restore(energy, last_online):
+    # дописать код расчёта сколько энергии восстанавливается (до какого уровня)
+    return energy
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+
     if request.method == 'GET':
-        print('!!!!')
         return render_template('index.html')
     elif request.method == 'POST':
-        print('@@@@')
         try:
             data = request.json
-            click_count = 0
             if 'refresh_page' in data:
-                print('обновление страницы!')
-                tg_id = data['value']
-                file_path = f'user_data/{tg_id}.txt'
-                if os.path.exists(file_path):
-
-                    with open(file_path, 'r', encoding='UTF-8') as file:
-                        click_count = file.read()
-                        print(click_count)
-                else:
-                    with open(file_path, 'w', encoding='UTF-8') as file:
-                        file.write('0')
-                        print('Файл создан')
-                    
-                return jsonify({'message': 'Success!', 'value': click_count}), 200
+                tg_id = data['tg_id']
+                if not DB.is_user_exist(tg_id):
+                    DB.create_user(tg_id)
+                click_count, energy, last_online = DB.get_user_data(tg_id)
+                energy = restore(energy, last_online)
+                return jsonify({'click_count': click_count, 'energy': energy}), 200
             elif 'new_click_count' in data:
-                tg_id = data['value']
+                tg_id = data['tg_id']
                 new_click_count = data['new_click_count']
-                file_path = f'user_data/{tg_id}.txt'
-                with open(file_path, 'w', encoding='UTF-8') as file:
-                    file.write(f'{new_click_count}')                   
+                DB.update_clicks(tg_id, new_click_count)                               
                 return jsonify({'message': 'Success!'}), 200
-
             else:
                 raise KeyError('Value key not found')
         except (KeyError, json.JSONDecodeError) as e:
             print('&&&&')
             return jsonify({'error': 'Invalid data format'}), 400
         
+    
