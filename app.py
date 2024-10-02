@@ -1,16 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import json
-import os.path
 import sqlite3
 import DB
-
-
-# TODO
-# вывод энергии на страничке
-# пересчёт энергии после офлайна
-# живой персчёт энергии
-# сохранение текущей энергии и текущего онлайна
-# клики можно делать только если есть энергия, при клике энергия тратится
+from datetime import datetime
 
 
 connection = sqlite3.connect('my_database.db')
@@ -18,13 +10,17 @@ cursor = connection.cursor()
 
 app = Flask(__name__)
  
+
 def restore(energy, last_online):
-    # дописать код расчёта сколько энергии восстанавливается (до какого уровня)
+    delta_time = int((datetime.now() - last_online).total_seconds())
+    energy += delta_time
+    if energy > DB.MAX_ENERGY:
+        energy = DB.MAX_ENERGY
     return energy
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-
     if request.method == 'GET':
         return render_template('index.html')
     elif request.method == 'POST':
@@ -40,12 +36,12 @@ def index():
             elif 'new_click_count' in data:
                 tg_id = data['tg_id']
                 new_click_count = data['new_click_count']
-                DB.update_clicks(tg_id, new_click_count)                               
+                energy = data['energy']
+                # DB.update_clicks(tg_id, new_click_count)  
+                DB.update_user_data(tg_id, new_click_count, energy)                             
                 return jsonify({'message': 'Success!'}), 200
             else:
                 raise KeyError('Value key not found')
         except (KeyError, json.JSONDecodeError) as e:
             print('&&&&')
             return jsonify({'error': 'Invalid data format'}), 400
-        
-    

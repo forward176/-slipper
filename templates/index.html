@@ -41,12 +41,15 @@
     <div id="counter">0</div>
     <div id="circle">Нажми</div>
     <p id="test">Нет id</p> <!-- для теста -->
+    <div><span id="energy">10</span> ϟ</div>
     <script>
-
-        let counter = 0;
         const counterElement = document.getElementById('counter');
         const circleElement = document.getElementById('circle');
-
+        const energyElement = document.getElementById('energy');
+        const maxEnergy = 2000;
+        let energy = maxEnergy;
+        energyElement.textContent = energy; // для удобства проверок без запуска в телеграм
+        let counter = 0;       
         let tg = window.Telegram.WebApp; //получаем объект webapp телеграма
         try {
             document.getElementById('test').textContent = tg.initDataUnsafe.user.id; //  для теста
@@ -60,45 +63,40 @@
             .then((data) => {
                 counter = parseInt(data['click_count']);
                 counterElement.textContent = counter;
+                energy = parseInt(data['energy']);
+                energyElement.textContent = energy;
             });
           
-        } catch (err) {
-        
+        } catch (err) {        
             // значит сайт открылся не в телеграм
-            // НИЖЕ КОД ТЕСТОВЫЙ
-            /* console.log('Начало');       
-
-            fetch('/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'value': 222})
-            })
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                console.log('данные от flask:');
-                console.log(data['value']);
-                console.log('конец данных')
-            });
-    
-            console.log('Конец'); */
-
-        
         }
             
-        
+        function upEnergy() {
+            if (energy < maxEnergy){
+                energy++;
+                energyElement.textContent = energy; 
+            }
+        }
+        setInterval(upEnergy, 1000);
 
         circleElement.addEventListener('click', () => {
-            counter++;
-            counterElement.textContent = counter;
-            fetch('/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'tg_id': tg.initDataUnsafe.user.id, 'new_click_count': counter})
-            });
-        });
-        
+            if (energy > 0){
+                counter++;
+                counterElement.textContent = counter;
+                energy--;
+                energyElement.textContent = energy;
+                data_dict = {
+                    'tg_id': tg.initDataUnsafe.user.id, 
+                    'new_click_count': counter, 
+                    'energy': energy
+                }
+                fetch('/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data_dict)
+                });
+            }
+        });       
 
     </script>
 </body>

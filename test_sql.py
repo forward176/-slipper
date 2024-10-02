@@ -6,8 +6,10 @@ cursor = connection.cursor()
 
 # CRUD -- CREATE - READ - UPDATE - DELETE
 
+
+# - удаление
 # cursor.execute('''
-#     DROP TABLE Users; - удаление
+#     DROP TABLE Users; 
 # ''')
 # connection.commit()
 
@@ -16,9 +18,12 @@ cursor = connection.cursor()
 #         tg_id INTEGER PRIMARY KEY,
 #         clicks INTEGER,
 #         energy INTEGER,
-#         last_online DATETIME
+#         last_online TIMESTAMP
 #     );
 # ''')
+
+
+
 
 # cursor.execute('''
 #     INSERT INTO Users - добавить данные в таблицу 

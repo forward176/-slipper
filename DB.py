@@ -1,8 +1,8 @@
 import sqlite3
+from datetime import datetime
 
-
-START_ENERGY = 1_000
-
+START_ENERGY = 2_000
+MAX_ENERGY = 2_000
 
 def is_user_exist(telegram_id: int) -> bool:
     connection = sqlite3.connect('my_database.db')
@@ -42,8 +42,8 @@ def create_user(telegram_id: int) -> None:
     connection.commit()
     connection.close()
 
-
-def update_clicks(tg_id:int, new_click_count:int) -> None:
+# сейчас не используется
+def update_clicks(tg_id:int, new_click_count:int) -> None: 
     connection = sqlite3.connect('my_database.db')
     cursor = connection.cursor()
     query = '''
@@ -55,8 +55,23 @@ def update_clicks(tg_id:int, new_click_count:int) -> None:
     connection.commit()
     connection.close()
 
+def update_user_data(tg_id:int, new_click_count: int, energy: int) -> None: 
+    current_datetime = datetime.now()
+    print(current_datetime)
+    connection = sqlite3.connect('my_database.db')
+    cursor = connection.cursor()
+    query = '''
+            UPDATE Users  
+            SET clicks = ?, energy = ?, last_online = ?
+            WHERE tg_id = ?;
+    '''
+    data_tuple = (new_click_count, energy, current_datetime, tg_id)
+    cursor.execute(query, data_tuple)    
+    connection.commit()
+    connection.close()
 
-
+# create_user(100)
+# update_user_data(100, 200, 400)
 # assert is_user_exist(40) == False
 # assert is_user_exist(200) == True
 # x = 555
